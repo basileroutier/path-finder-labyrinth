@@ -13,7 +13,7 @@ public class Board {
     }
 
     public Case getCase(Position position) {
-        if(position.getX() < cases.length && position.getY() < cases[position.getX()].length){
+        if(position.getX() < cases.length && position.getX()>=0  && position.getY() < cases[position.getX()].length && position.getY()>=0){
             return cases[position.getX()][position.getY()];
         }
         return null;
