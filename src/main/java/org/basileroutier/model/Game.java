@@ -24,7 +24,9 @@ public class Game {
     }
 
     public Game() {
-        this(10);
+        this(
+                5
+        );
     }
 
 
@@ -41,12 +43,12 @@ public class Game {
     }
 
     public void backtrackingFindPath() {
-        List<Position> findedPath = new ArrayList<>();
+        List<List<Position>> findedPath = new ArrayList<>();
         List<Position> currentPath = new ArrayList<>();
         findPath(findedPath, currentPath, new Position(0, 0));
     }
 
-    private void findPath(List<Position> findedPath, List<Position> currentPath, Position position) {
+    private void findPath(List<List<Position>> findedPath, List<Position> currentPath, Position position) {
         int numberOfMovement = 4;
         if(isCurrentPathSizeGreaterThanFindedPath(currentPath, findedPath) || isPathEnd(board.getTile(position))){
             return;
@@ -56,12 +58,10 @@ public class Game {
             Position nextPos = movePosition(i, position);
             if(isValid(currentPath, board.getTile(nextPos), nextPos)){
                 if(isPathEnd(board.getTile(nextPos))){
-                    findedPath.addAll(currentPath);
-                    findedPath.add(nextPos);
-                    System.out.println("finded solution : " + findedPath);
-                    return;
+                    sendFindedPath(findedPath, currentPath, nextPos);
+                }else{
+                    findPath(findedPath, currentPath, nextPos);
                 }
-                findPath(findedPath, currentPath, nextPos);
             }
         }
         currentPath.remove(currentPath.size() - 1);
@@ -70,16 +70,18 @@ public class Game {
     private Position movePosition(int pos, Position prevoiusPosition){
         switch(pos){
             case 0:
-                return new Position(prevoiusPosition.getX(), prevoiusPosition.getY() - 1); // up
+                return new Position(prevoiusPosition.getX(), prevoiusPosition.getY() - 1);
             case 1:
-                return new Position(prevoiusPosition.getX() + 1, prevoiusPosition.getY()); // right
+                return new Position(prevoiusPosition.getX() + 1, prevoiusPosition.getY());
             case 2:
-                return new Position(prevoiusPosition.getX(), prevoiusPosition.getY() + 1); // down
+                return new Position(prevoiusPosition.getX(), prevoiusPosition.getY() + 1);
             case 3:
-                return new Position(prevoiusPosition.getX() - 1, prevoiusPosition.getY()); // left
+                return new Position(prevoiusPosition.getX() - 1, prevoiusPosition.getY());
         }
         throw new IllegalArgumentException("Invalid position");
     }
+
+
 
     private boolean isValid(List<Position> currentPath, Tile tile, Position position){
         return isValidPosition(position) && isValidTile(tile) && !isAlreadyVisited(currentPath, position);
@@ -101,11 +103,16 @@ public class Game {
         return tile == Tile.EMPTY || tile == Tile.END;
     }
 
-    private boolean isCurrentPathSizeGreaterThanFindedPath(List<Position> currentPath, List<Position> findedPath){
+    private boolean isCurrentPathSizeGreaterThanFindedPath(List<Position> currentPath, List<List<Position>> findedPath){
         if(findedPath.isEmpty()){
             return false;
         }
-        return (currentPath.size() + 1) >= findedPath.size();
+        for(List<Position> path : findedPath){
+            if(currentPath.size()+1 > path.size()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public Board getBoard() {
@@ -113,6 +120,12 @@ public class Game {
     }
 
 
+    private void sendFindedPath(List<List<Position>> findedPath, List<Position> currentPath, Position nextPos){
+        List<Position> path = new ArrayList<>(currentPath);
+        path.add(nextPos);
+        findedPath.add(path);
+        change(PROPERTY_FIND_PATH, path);
+    }
 
     /**
      * Add listener to the observator
