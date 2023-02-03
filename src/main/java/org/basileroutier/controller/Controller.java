@@ -14,7 +14,8 @@ public class Controller {
     }
 
     public void start() {
-        view.displayBoard();
+        view.displayInformation();
+        view.displayBoard(null);
         game.backtrackingFindPath();
     }
 
