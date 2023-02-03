@@ -24,9 +24,7 @@ public class Game {
     }
 
     public Game() {
-        this(
-                5
-        );
+        this(5);
     }
 
 
